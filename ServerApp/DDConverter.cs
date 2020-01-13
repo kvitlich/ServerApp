@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Reflection;
 
 namespace ServerApp
 {
@@ -13,27 +12,26 @@ namespace ServerApp
             Type myType = typeof(T);
             StringBuilder result = new StringBuilder();
             result.Append($"[table:{myType.Name}]");
-            result.Append("[columns]");
             var properties = myType.GetProperties();
             for (int i = 0; i < properties.Length; i++)
             {
                 result.Append("[column]");
-                result.Append($"[name:{properties[0].Name}]");
+                result.Append($"[name:{properties[i].Name}]");
                 result.Append($"[data:");
-                for (int j = 0; j < ddObject.Count; j++)
-                {
-                    result.Append(@$"{ddObject[j]}\");
+                for (int j = 0; j < ddObject.Count; j++)    {
+                    result.Append(@$"{properties[i].GetValue(ddObject[j])}\");
                 }
                 result.Append($"]");
                 result.Append("[/column]");
             }
+            result.Append($"[/table]");
             return result.ToString();
         }
 
 
         public T ToObject<T>(string ddString)
         {
-            T result = null;
+            T result = default(T);
             return result;
         }
 

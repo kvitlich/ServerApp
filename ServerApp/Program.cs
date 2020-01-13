@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -9,12 +10,17 @@ namespace ServerApp
     {
         static void Main(string[] args)
         {
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
-            Console.InputEncoding = System.Text.Encoding.UTF8;
-            SmsReader(); Console.ReadLine();
+            //    Console.OutputEncoding = System.Text.Encoding.UTF8;
+            //    Console.InputEncoding = System.Text.Encoding.UTF8;
+            //    SmsReader();
+            DDConverter obje = new DDConverter();
+
+            Console.WriteLine(obje.FromObject(new List<User>() { new User(), new User() }));
+            Console.ReadLine();
+
         }
 
-       
+
 
         private async static void SmsReader()
         {
