@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -10,9 +11,18 @@ namespace ServerApp
     {
         static void Main(string[] args)
         {
-            //    Console.OutputEncoding = System.Text.Encoding.UTF8;
-            //    Console.InputEncoding = System.Text.Encoding.UTF8;
-            //    SmsReader();
+
+            //using (var context = new ServerDbContext())
+            //{
+            //    var userFirst = new User { Name = "Dias", Age = "32" };
+            //    var userSecond = new User { Name = "Dinazavr", Age = "180" };
+            //    context.Users.Add(userFirst);
+            //    context.Users.Add(userSecond);
+            //    context.SaveChanges();
+            //}
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.InputEncoding = System.Text.Encoding.UTF8;
+            SmsReader();
             DDConverter obje = new DDConverter();
 
             Console.WriteLine(obje.FromObject(new List<User>() { new User(), new User() }));
@@ -54,8 +64,20 @@ namespace ServerApp
 
                         }
                         while (stream.DataAvailable);
-                        Console.WriteLine($"Message: {resultText}");
+                        DDConverter converter = new DDConverter();
+                        string answer;
+                        using (var context = new ServerDbContext())
+                        {
+                            answer = converter.FromObject(context.Users.ToList());
+                        }
+                        // 2 ответа
+                        var answerBytesQuantity = System.Text.Encoding.UTF8.GetBytes($"{answer.Length}"); // кол-во байтов, клиент создаст буфер
+                        stream.Write(answerBytesQuantity, 0, answerBytesQuantity.Length);
+                        stream.Write(System.Text.Encoding.UTF8.GetBytes(answer), 0, System.Text.Encoding.UTF8.GetBytes(answer).Length);
+
+                        Console.WriteLine($"Message: {answer}");
                     }
+
                 }
                 //  var answer = System.Text.Encoding.UTF8.GetBytes("Запрос получен");
                 //   stream.Write(answer, 0, answer.Length);

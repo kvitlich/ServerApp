@@ -1,18 +1,22 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Text;
 
 namespace ServerApp
 {
     public class ServerDbContext : DbContext
     {
 
-        public ServerDbContext() : base("Server=;Database=ServerDb;Trusted_Connection=true;")
+        public ServerDbContext()
         {
-                
+            Database.EnsureCreated();
         }
 
+        public DbSet<User> Users { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer("Server=104-04;Database=DDBase;Trusted_Connection=true;");
+        }
     }
 }
