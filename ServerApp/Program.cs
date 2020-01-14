@@ -12,6 +12,7 @@ namespace ServerApp
         static void Main(string[] args)
         {
             //FillDataBase();
+            Console.WriteLine("DB is filled");
 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.InputEncoding = System.Text.Encoding.UTF8;
@@ -63,11 +64,13 @@ namespace ServerApp
                         if (result == "Give")
                         {
                             DDConverter converter = new DDConverter();
-                            string answer = @"[table:Users][column][name:Full Name][data:Dias\Dinara\Chmawnik\][/column][column][name:Age][data:16\20\350\][/column][column][name:Gender][data:male\female\nothing\][/column][/table]";
-                            //using (var context = new ServerDbContext())
-                            //{
-                            //    answer = converter.FromObject(context.Users.ToList());
-                            //}
+                            //string answer = @"[table:Users][column][name:Full Name][data:Dias\Dinara\Chmawnik\][/column][column][name:Age][data:16\20\350\][/column][column][name:Gender][data:male\female\nothing\][/column][/table]";
+
+                            string answer = String.Empty;
+                            using (var context = new ServerDbContext())
+                            {
+                                answer = converter.FromObject(context.Users.OrderBy(user => user.Id).Where(user => user.DeletedDate == null).ToList());
+                            }
 
                             // 2 ответа
                             var answerBytesQuantity = System.Text.Encoding.UTF8.GetBytes($"{answer.Length}"); // кол-во байтов, клиент создаст буфер
@@ -81,14 +84,14 @@ namespace ServerApp
                             result = json["Data"].ToString();
                             var newUserData = result.Split('\\');
 
-                            //using (var context = new ServerDbContext())
-                            //{
-                            //    var user = new User { Name = newUserData[0], Age = newUserData[1] };
-                            //    context.Add(user);
-                            //    await context.SaveChangesAsync();
-                            //}
+                            using (var context = new ServerDbContext())
+                            {
+                                var user = new User { Name = newUserData[0], Age = newUserData[1] };
+                                context.Add(user);
+                                await context.SaveChangesAsync();
+                            }
 
-                            Console.WriteLine($"Name = {newUserData[0]}, Age = {newUserData[1]}");
+                            //Console.WriteLine($"Name = {newUserData[0]}, Age = {newUserData[1]}");
 
                             var answer = "Новый User добавлен.";
                             var answerBytes = System.Text.Encoding.UTF8.GetBytes(answer);
@@ -101,16 +104,16 @@ namespace ServerApp
                             var updateUserData = result.Split('\\');
                             int number = Int32.Parse(updateUserData[0]);
 
-                            //using (var context = new ServerDbContext())
-                            //{
-                            //    var chosenUser = context.Users.Skip(number).Take(1).FirstOrDefault();
-                            //    chosenUser.Name = updateUserData[1];
-                            //    chosenUser.Age = updateUserData[2];
+                            using (var context = new ServerDbContext())
+                            {
+                                var chosenUser = context.Users.OrderBy(user => user.Id).Where(user => user.DeletedDate == null).Skip(number-1).Take(1).FirstOrDefault();
+                                chosenUser.Name = updateUserData[1];
+                                chosenUser.Age = updateUserData[2];
 
-                            //    await context.SaveChangesAsync();
-                            //}
+                                await context.SaveChangesAsync();
+                            }
 
-                            Console.WriteLine($"Name = {updateUserData[1]}, Age = {updateUserData[2]}");
+                            //Console.WriteLine($"Name = {updateUserData[1]}, Age = {updateUserData[2]}");
 
                             var answer = "User изменён.";
                             var answerBytes = System.Text.Encoding.UTF8.GetBytes(answer);
@@ -122,15 +125,15 @@ namespace ServerApp
                             var removeUserData = result.Split('\\');
                             int number = Int32.Parse(removeUserData[0]);
 
-                            //using (var context = new ServerDbContext())
-                            //{
-                            //    var chosenUser = context.Users.Skip(number).Take(1).FirstOrDefault();
-                            //    chosenUser.DeletedDate = DateTime.Now;
+                            using (var context = new ServerDbContext())
+                            {
+                                var chosenUser = context.Users.OrderBy(user => user.Id).Where(user => user.DeletedDate == null).Skip(number-1).Take(1).FirstOrDefault();
+                                chosenUser.DeletedDate = DateTime.Now;
 
-                            //    await context.SaveChangesAsync();
-                            //}
+                                await context.SaveChangesAsync();
+                            }
 
-                            Console.WriteLine($"Number = {number}");
+                            //Console.WriteLine($"Number = {number}");
 
                             var answer = "User удалён.";
                             var answerBytes = System.Text.Encoding.UTF8.GetBytes(answer);
