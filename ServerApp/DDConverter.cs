@@ -6,7 +6,8 @@ namespace ServerApp
 {
     public class DDConverter
     {
-        
+        //public string response;
+
         public string FromObject<T>(List<T> ddObject)
         {
             Type myType = typeof(T);
@@ -18,7 +19,8 @@ namespace ServerApp
                 result.Append("[column]");
                 result.Append($"[name:{properties[i].Name}]");
                 result.Append($"[data:");
-                for (int j = 0; j < ddObject.Count; j++)    {
+                for (int j = 0; j < ddObject.Count; j++)
+                {
                     result.Append(@$"{properties[i].GetValue(ddObject[j])}\");
                 }
                 result.Append($"]");
